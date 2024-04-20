@@ -1,14 +1,14 @@
 import rosbag
 import numpy as np
 
-bag_w = rosbag.Bag('rosbags/blanco_5cm_ldr_2024-04-17-10-58-32.bag')
+bag_w = rosbag.Bag('IR_sensor/blanco_5cm_ldr_2024-04-17-10-58-32.bag')
 values_list_w = []
 for topic, msg, t in bag_w.read_messages():
     values_list_w.append(int(msg.adc0))
 
 bag_w.close()
 
-bag_b = rosbag.Bag('rosbags/negro_5cm_ldr_2024-04-17-10-55-07.bag')
+bag_b = rosbag.Bag('IR_sensor/negro_5cm_ldr_2024-04-17-10-55-07.bag')
 values_list_b = []
 for topic, msg, t in bag_b.read_messages():
     values_list_b.append(int(msg.adc0))
