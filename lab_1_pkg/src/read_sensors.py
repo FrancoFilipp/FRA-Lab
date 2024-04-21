@@ -21,10 +21,10 @@ class ReadSensors:
         self.pose_subscriber = rospy.Subscriber('/adc', Adc, self.repost_data) 
 
         self.o_ant = -1
-        #self.alpha = 0.1
-        self.alpha = 0.5
+        self.alpha = 0.01
+        #self.alpha = 0.5
 
-        self.rate = rospy.Rate(10)
+        #self.rate = rospy.Rate(10)
 
     def repost_data(self, data):
         o_actual = int(data.adc0)
@@ -33,11 +33,12 @@ class ReadSensors:
 
         # hago filtrado pasa bajos
         out = self.o_ant + self.alpha * (o_actual - self.o_ant)
-        print(out)
+        #print(out)
+        self.o_ant = out
 
         self.topic_publisher.publish(out)
 
-        self.rate.sleep()
+        #self.rate.sleep()
 
 if __name__ == '__main__':
 
