@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Bool
 import numpy as np
 
 def callback(scan):
@@ -14,21 +14,22 @@ def callback(scan):
             min_index = i
 
     angle_of_closest_object = scan.angle_min + min_index * scan.angle_increment
-    direction_clocwise = False
+    direction_clockwise = False
     
     if (angle_of_closest_object > np.pi):
         angle_of_closest_object = 2 * np.pi - angle_of_closest_object
-        direction_clocwise = True
+        direction_clockwise = True
     
     angle_pub.publish(angle_of_closest_object)
-    direction_clockwise.publish(direction_clocwise)
+    direction_pub.publish(direction_clockwise)
 
     # Log the closest distance and its angle
-    print(f"Distance: {min_distance: .2f} meters, Angle: {angle_of_closest_object: .2f} radians, Clockwise: {clockwise}")
+    print(f"Distance: {min_distance: .2f} meters, Angle: {angle_of_closest_object: .2f} radians, Clockwise: {direction_clockwise}")
 
 def listener():
     rospy.init_node('closest_object')
     global angle_pub
+    global direction_pub
     angle_pub = rospy.Publisher('rotation_angle', Float64, queue_size=10)
     direction_pub = rospy.Publisher('direction_clockwise', Bool, queue_size=10)
     rospy.Subscriber("/scan", LaserScan, callback)
