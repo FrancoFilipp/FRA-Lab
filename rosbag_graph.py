@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 
 #levanto archivo bags
-bag_blanco = rosbag.Bag("rosbags/sensorIluminacion/blanco_5cm_ldr_2024-04-17-11-11-17.bag")
-bag_negro = rosbag.Bag("rosbags/sensorIluminacion/negro_5cm_ldr_2024-04-17-10-55-07.bag")
+bag_blanco = rosbag.Bag("IR_sensor/blanco_5cm_ldr_2024-04-17-11-11-17.bag")
+bag_negro = rosbag.Bag("IR_sensor/negro_5cm_ldr_2024-04-17-10-55-07.bag")
 
 #creo dataframes para cada archivo
 rosbag_df_negro = pd.DataFrame(columns=['negro'])
