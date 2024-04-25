@@ -3,6 +3,7 @@
 import rosbag
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 #levanto archivo bags
 bag_blanco = rosbag.Bag("IR_sensor/blanco_5cm_ldr_2024-04-17-11-11-17.bag")
@@ -32,13 +33,9 @@ rosbag_df_negro['negro'] = values_negro_list
 rosbag_df_blanco['blanco'] = values_blanco_list
 
 
-#estudio valores negros
+#funcion para estudio de valores
 
-
-
-
-
-def outliers(df,col,threshold):
+def dropOutliers(df,col,threshold):
     Q3 = np.quantile(df[col], 0.75)
 
 
@@ -46,40 +43,68 @@ def outliers(df,col,threshold):
 
 
     IQR = Q3 - Q1 #rango intercuartilico
-    print("RANGO INTERCUARTILICO ",IQR)
+    
 
     lower_range = Q1 - threshold * IQR
-    print("OUTLIER LOWER RANGE ",lower_range)
+    
 
     upper_range = Q3 + threshold * IQR
-    print("OUTLIER UPPER RANGE ",upper_range)
+    
 
     df[col].fillna(0)
 
     outliers = df[(df[col] < lower_range) | (df[col] > upper_range)]
+    
 
-    return outliers
-
-print("VALORES NEGRO",rosbag_df_negro.describe())
-print("CANTIDAD DE OUTLIERS",len(outliers(rosbag_df_negro,'negro',0)))
-
-#dropped_outliers_negro = outliers(rosbag_df_negro,'negro',0)
-dropped_outliers_negro = rosbag_df_negro.drop(outliers(rosbag_df_negro,'negro',0).index, axis=0)
+    dropped_df = df.drop(outliers.index, axis=0)
 
 
-print("VALORES BLANCO",rosbag_df_blanco.describe())
+    print(" ")
+    print(col)
+    print("============")
+    print("CANTIDAD DE VALORES DATA ORIGINAL",len(df[col]))
+    print("VALORES CON OUTLIERS")
+    print(df[col].describe())
+    print("============")
+    print("OUTLIER UPPER RANGE ",upper_range)
+    print("OUTLIER LOWER RANGE ",lower_range)
+    print("CANTIDAD DE OUTLIERS",len(outliers))
+    print("VALORES SIN OUTLIERS")
+    print(dropped_df.describe())
+    print("============")
+          
+
+    return outliers,dropped_df,lower_range,upper_range,IQR
 
 
-#for index in indexes_negro:
-#  dropOutliers(rosbag_df_negro,'negro').index
+
+dropped_df_negro = dropOutliers(rosbag_df_negro,'negro',0)[0]
+
+dropped_df_blanco = dropOutliers(rosbag_df_blanco,'blanco',0)[0]
 
 
-#print("VALORES NEGRO",dropOutliers(rosbag_df_negro,'negro',0))
 
 
 
-#genero un dataframe único
-rosbag_df = pd.concat([rosbag_df_negro,rosbag_df_blanco],ignore_index=True,axis=1)
+
+
+
+
+rosbag_df=pd.DataFrame()
+rosbag_df['valores_negro_raw'] = rosbag_df_negro['negro']
+rosbag_df['valores_blanco_raw'] = rosbag_df_blanco['blanco']
+rosbag_df['valores_negro_sin_outlier'] = dropped_df_negro['negro']
+rosbag_df['valores_blanco_sin_outlier'] = dropped_df_blanco['blanco']
+
+print(rosbag_df)
+
+
+
+plt.title("VALORES DE CONTRASTE")
+
+plt.plot(rosbag_df)
+
+plt.show()
 
 
 bag_negro.close()
