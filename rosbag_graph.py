@@ -33,7 +33,8 @@ rosbag_df_negro['negro'] = values_negro_list
 rosbag_df_blanco['blanco'] = values_blanco_list
 
 
-#funcion para estudio de valores
+#funcion para estudio de valores y droppeo de outliers
+#imputación de outliers según metodo IRQ https://online.stat.psu.edu/stat200/lesson/3/3.2
 
 def dropOutliers(df,col,threshold):
     Q3 = np.quantile(df[col], 0.75)
@@ -77,27 +78,26 @@ def dropOutliers(df,col,threshold):
     return outliers,dropped_df,lower_range,upper_range,IQR
 
 
-
+#saco los valores considerados outliers para valores en blanco y en negro
 dropped_df_negro = dropOutliers(rosbag_df_negro,'negro',0)[0]
 
 dropped_df_blanco = dropOutliers(rosbag_df_blanco,'blanco',0)[0]
 
-
+#genero dataframe único para facilitar ploteo
 rosbag_df=pd.DataFrame()
 rosbag_df['valores_negro_raw'] = rosbag_df_negro['negro']
 rosbag_df['valores_blanco_raw'] = rosbag_df_blanco['blanco']
 rosbag_df['valores_negro_sin_outlier'] = dropped_df_negro['negro']
 rosbag_df['valores_blanco_sin_outlier'] = dropped_df_blanco['blanco']
 
-print(rosbag_df)
-
-
-
+#ploteo todos los valores en una sola gráfica
 plt.title("VALORES DE CONTRASTE")
 
 plt.plot(rosbag_df)
 
 plt.show()
+
+
 
 
 bag_negro.close()
