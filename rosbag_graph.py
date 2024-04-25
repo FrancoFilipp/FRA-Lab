@@ -83,13 +83,6 @@ dropped_df_negro = dropOutliers(rosbag_df_negro,'negro',0)[0]
 dropped_df_blanco = dropOutliers(rosbag_df_blanco,'blanco',0)[0]
 
 
-
-
-
-
-
-
-
 rosbag_df=pd.DataFrame()
 rosbag_df['valores_negro_raw'] = rosbag_df_negro['negro']
 rosbag_df['valores_blanco_raw'] = rosbag_df_blanco['blanco']
