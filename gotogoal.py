@@ -27,7 +27,7 @@ class Robot:
         return sqrt(pow(self.goal_pos.x, 2) + pow(self.goal_pos.y, 2))
 
     def linear_vel(self, constant=1.5):
-        max_vel = 0.1
+        max_vel = 0.1 # TODO: Ver la velocidad máxima de los motores
         return min(constant * self.euclidean_distance(self.goal_pos), max_vel)
 
     def steering_angle(self):
