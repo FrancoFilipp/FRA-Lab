@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float64, Bool
+from geometry_msgs.msg import Point
 import numpy as np
 
 def callback(scan):
@@ -13,25 +13,28 @@ def callback(scan):
             min_distance = distance
             min_index = i
 
-    angle_of_closest_object = scan.angle_min + min_index * scan.angle_increment
-    direction_clockwise = False
+    theta = scan.angle_min + min_index * scan.angle_increment
     
-    if (angle_of_closest_object > np.pi):
-        angle_of_closest_object = 2 * np.pi - angle_of_closest_object
-        direction_clockwise = True
+    calibration_angle = 0 # TODO: Calcular al colocar el LIDAR en el robot
+    theta += calibration_angle
     
-    angle_pub.publish(angle_of_closest_object)
-    direction_pub.publish(direction_clockwise)
-
+    if min_index == -1:
+        x = 0
+        y = 0
+    else:
+        # TODO: Verificar que ande bien
+        x = min_distance * np.cos(theta + np.pi/2)
+        y = min_distance * np.sin(theta + np.pi/2)
+        
+    pos_pub.publish(Point(x, y, 0))
+    
     # Log the closest distance and its angle
-    print(f"Distance: {min_distance: .2f} meters, Angle: {angle_of_closest_object: .2f} radians, Clockwise: {direction_clockwise}")
+    print(f"Distance: {min_distance: .2f} meters, Angle: {theta: .2f} radians")
 
 def listener():
     rospy.init_node('closest_object')
-    global angle_pub
-    global direction_pub
-    angle_pub = rospy.Publisher('rotation_angle', Float64, queue_size=10)
-    direction_pub = rospy.Publisher('direction_clockwise', Bool, queue_size=10)
+    global pos_pub
+    pos_pub = rospy.Publisher('goal_relative_pos', Point, queue_size=10)
     rospy.Subscriber("/scan", LaserScan, callback)
     rospy.spin()
 
