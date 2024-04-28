@@ -14,21 +14,21 @@ def pasabajo(alpha,sensor_read):
 
 #funcion callback se subscriber
 def callback_publish_pasabajo(msg:Adc):
-
+    msg_out = Adc()
     
     valor_pasabajo = pasabajo(pasabajo_alpha,msg.adc0)
     
-    msg.adc0 = int(valor_pasabajo)
-    msg.adc1 = 0
-    msg.adc2 = 0
-    msg.adc3 = 0
-    msg.adc4 = 0
-    msg.adc5 = 0
+    msg_out.adc0 = int(valor_pasabajo)
+    msg_out.adc1 = 0
+    msg_out.adc2 = 0
+    msg_out.adc3 = 0
+    msg_out.adc4 = 0
+    msg_out.adc5 = 0
 
     rospy.loginfo("valor crudo " + str(msg.adc0))
     rospy.loginfo("valor pasabajo " + str(valor_pasabajo) )
     
-    pub.publish(msg)
+    pub.publish(msg_out)
 
 
 if __name__ == '__main__':
