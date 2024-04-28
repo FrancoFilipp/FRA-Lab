@@ -3,10 +3,21 @@ import numpy as np
 import rospy
 from sensor_msgs.msg import LaserScan
 
+DISTANCE = 0 # 0: min, 1: max, 2: mean
+
 if __name__ == '__main__':
-    bag_l = rosbag.Bag("lidar/lidar_cono_20cm_2024-04-19-12-08-52.bag")
-    #bag_l = rosbag.Bag("lidar/lidar_cono_35cm_2024-04-19-12-10-38.bag")
-    #bag_l = rosbag.Bag("lidar/lidar_cono_120cm_2024-04-19-12-15-58.bag")
+    if DISTANCE == 0:
+        bag_l = rosbag.Bag("lidar/lidar_cono_20cm_2024-04-19-12-08-52.bag")
+        angle_min = 170
+        angle_max = 183
+    elif DISTANCE == 1:
+        bag_l = rosbag.Bag("lidar/lidar_cono_47cm_2024-04-19-12-10-38.bag")
+        angle_min = 170
+        angle_max = 179
+    elif DISTANCE == 2:
+        bag_l = rosbag.Bag("lidar/lidar_cono_120cm_2024-04-19-12-15-58.bag")
+        angle_min = 170
+        angle_max = 180
     
     rospy.init_node('lidar')
     pub_min = rospy.Publisher('/scan_min', LaserScan, queue_size=10)
@@ -15,8 +26,8 @@ if __name__ == '__main__':
     
     rate = rospy.Rate(1)
 
-    angle_min = np.deg2rad(170)
-    angle_max = np.deg2rad(183)
+    angle_min = np.deg2rad(angle_min)
+    angle_max = np.deg2rad(angle_max)
     while not rospy.is_shutdown():
         all_scans = []
         for topic, scan, t in bag_l.read_messages(topics=['/scan']):
@@ -24,6 +35,9 @@ if __name__ == '__main__':
             end_index = int((angle_max - scan.angle_min) / scan.angle_increment)
 
             ranges = scan.ranges[start_index:end_index]
+            if np.all(ranges == 0.0):
+                continue
+            
             all_scans.append(ranges)
             
         all_scans = np.array(all_scans)
@@ -32,7 +46,7 @@ if __name__ == '__main__':
         mean_distances = np.mean(all_scans, axis=0)
         
         std = np.std(all_scans, axis=0)
-        print(f"Mean standard deviation: {np.mean(std):.2f}")
+        print(f"Mean standard deviation: {np.mean(std):.4f}")
     
         new_scan = LaserScan()
         new_scan.header = scan.header
