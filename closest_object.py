@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Point
@@ -15,8 +15,8 @@ def callback(scan):
 
     theta = scan.angle_min + min_index * scan.angle_increment
     
-    calibration_angle = 0 # TODO: Calcular al colocar el LIDAR en el robot
-    theta += calibration_angle
+    calibration_angle = 4.69 # El frente del robot está en 4.69
+    theta -= calibration_angle
     
     if min_index == -1:
         x = 0

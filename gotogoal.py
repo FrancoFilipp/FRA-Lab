@@ -12,7 +12,6 @@ class Robot:
     def __init__(self):
         rospy.init_node('turtlebot_controller', anonymous=True)
 
-        # TODO: Chequear si el topic es correcto
         self.velocity_publisher = rospy.Publisher('/dynamixel_workbench/cmd_vel', Twist, queue_size=10)
         
         self.goal_position_subscriber = rospy.Subscriber('/goal_relative_pos', Point, self.update_goal)
@@ -27,27 +26,32 @@ class Robot:
         return sqrt(pow(self.goal_pos.x, 2) + pow(self.goal_pos.y, 2))
 
     def linear_vel(self, constant=1.5):
-        max_vel = 0.1 # TODO: Ver la velocidad máxima de los motores
-        return min(constant * self.euclidean_distance(self.goal_pos), max_vel)
+        max_vel = 0.15
+        return min(constant * self.euclidean_distance(), max_vel)
 
     def steering_angle(self):
         return atan2(self.goal_pos.y, self.goal_pos.x)
 
-    def angular_vel(self, constant=6):
+    def angular_vel(self, constant=2):
         """
         TODO: Chequear esto, supongo que el theta es hacia a donde apunta el frente del robot,
         que creo que es theta=0. En este caso el robot siempre estaría "fijo" en el origen aputando
         hacia arriba, y pensamos como que lo que se mueve es el punto de destino.
         """
         theta = 0
-        return constant * (self.steering_angle(self.goal_pos) - theta)
+        return constant * (self.steering_angle() - theta)
 
     def move2goal(self):
         vel_msg = Twist()
         
-        distance_tolerance = 0.1
+        rate = rospy.Rate(0.2) # Cuando encuentra el objetivo, espera 5 segundos y luego vuelve a buscar
+        
+        distance_tolerance = 0.17
         while not rospy.is_shutdown():
-            while self.euclidean_distance() >= distance_tolerance:
+            while self.euclidean_distance() >= distance_tolerance and not rospy.is_shutdown():
+                print(self.euclidean_distance())
+                # print("Pos:", self.goal_pos)
+                
                 vel_msg.linear.x = self.linear_vel()
                 vel_msg.linear.y = 0
                 vel_msg.linear.z = 0
@@ -63,7 +67,11 @@ class Robot:
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
             
-            time.sleep(1)
+            rate.sleep()
+       
+        vel_msg.linear.x = 0
+        vel_msg.angular.z = 0
+        self.velocity_publisher.publish(vel_msg)
 
 if __name__ == '__main__':
     try:
