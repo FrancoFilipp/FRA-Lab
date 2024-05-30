@@ -1,0 +1,24 @@
+<?xml version="1" ?>
+<sdf version="1.7">
+  <model name="laberinto_letra">
+    <static>false</static>
+    <link name="link">
+      <collision name="surface">
+        <pose>0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>2.5 3.5 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://laberinto_1/lab_mat_.DAE</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

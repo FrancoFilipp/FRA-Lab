@@ -1,0 +1,197 @@
+<?xml version="1" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author/>
+      <authoring_tool>FBX COLLADA exporter</authoring_tool>
+      <comments/>
+    </contributor>
+    <created>2024-05-29T22:27:45Z</created>
+    <keywords/>
+    <modified>2024-05-29T22:27:45Z</modified>
+    <revision/>
+    <subject/>
+    <title/>
+    <unit meter="1.000000" name="centimeter"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="MapFBXASC032FBXASC0351-image" name="MapFBXASC032FBXASC0351">
+      <init_from>/home/franco/.gazebo/models/laberinto_1/laberinto_letra.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="FBXASC0482FBXASC032-FBXASC032Default" name="FBXASC0482FBXASC032-FBXASC032Default">
+      <instance_effect url="#FBXASC0482FBXASC032-FBXASC032Default-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="FBXASC0482FBXASC032-FBXASC032Default-fx" name="FBXASC0482FBXASC032-FBXASC032Default">
+      <profile_COMMON>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0.000000  0.000000 0.000000 1.000000</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0.588235  0.588235 0.588235 1.000000</color>
+            </ambient>
+            <diffuse>
+              <texture texture="MapFBXASC032FBXASC0351-image" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.000000  0.000000 0.000000 1.000000</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">2.000000</float>
+            </shininess>
+            <reflective>
+              <color sid="reflective">0.000000  0.000000 0.000000 1.000000</color>
+            </reflective>
+            <reflectivity>
+              <float sid="reflectivity">1.000000</float>
+            </reflectivity>
+            <transparent opaque="RGB_ZERO">
+              <color sid="transparent">1.000000  1.000000 1.000000 1.000000</color>
+            </transparent>
+            <transparency>
+              <float sid="transparency">0.000000</float>
+            </transparency>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="SM_lab_map-lib" name="SM_lab_mapMesh">
+      <mesh>
+        <source id="SM_lab_map-POSITION">
+          <float_array id="SM_lab_map-POSITION-array" count="24">
+-1.256601 -1.759240 0.050000
+1.256601 -1.759240 0.050000
+-1.256601 1.759240 0.050000
+1.256601 1.759240 0.050000
+-1.256601 -1.759240 0.000000
+1.256601 -1.759240 0.000000
+-1.256601 1.759240 0.000000
+1.256601 1.759240 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#SM_lab_map-POSITION-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SM_lab_map-Normal0">
+          <float_array id="SM_lab_map-Normal0-array" count="90">
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+1.000000 0.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#SM_lab_map-Normal0-array" count="30" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SM_lab_map-UV0">
+          <float_array id="SM_lab_map-UV0-array" count="16">
+0.000000 0.000000
+1.000000 0.000000
+0.000000 1.000000
+1.000000 1.000000
+0.000000 1.000000
+0.000000 0.000000
+1.000000 1.000000
+1.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#SM_lab_map-UV0-array" count="8" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="SM_lab_map-VERTEX">
+          <input semantic="POSITION" source="#SM_lab_map-POSITION"/>
+        </vertices>
+        <triangles count="10" material="FBXASC0482FBXASC032-FBXASC032Default">
+          <input semantic="VERTEX" offset="0" source="#SM_lab_map-VERTEX"/>
+          <input semantic="NORMAL" offset="1" source="#SM_lab_map-Normal0"/>
+          <input semantic="TEXCOORD" offset="2" set="0" source="#SM_lab_map-UV0"/>
+          <p> 3 0 3 2 1 2 0 2 0 3 3 3 0 4 0 1 5 1 0 6 0 2 7 2 6 8 4 0 9 0 6 10 4 4 11 5 2 12 2 3 13 3 7 14 6 2 15 2 7 16 6 6 17 4 3 18 3 1 19 1 5 20 7 3 21 3 5 22 7 7 23 6 1 24 1 0 25 0 4 26 5 1 27 1 4 28 5 5 29 7</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="lab_mat" name="lab_mat">
+      <node name="SM_lab_map" id="SM_lab_map" sid="SM_lab_map">
+        <matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix>
+        <instance_geometry url="#SM_lab_map-lib">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="FBXASC0482FBXASC032-FBXASC032Default" target="#FBXASC0482FBXASC032-FBXASC032Default"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+        <extra>
+          <technique profile="FCOLLADA">
+            <visibility>1.000000</visibility>
+          </technique>
+        </extra>
+      </node>
+      <extra>
+        <technique profile="MAX3D">
+          <frame_rate>30.000000</frame_rate>
+        </technique>
+        <technique profile="FCOLLADA">
+          <start_time>0.000000</start_time>
+          <end_time>3.333333</end_time>
+        </technique>
+      </extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#lab_mat"/>
+  </scene>
+</COLLADA>
