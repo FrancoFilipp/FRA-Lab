@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from geometry_msgs.msg import Twist, Point
-from math import pow, atan2, sqrt
+from math import pow, atan2, sqrt, pi
 from turtlesim.srv import SetPen
 import random
 import time
@@ -12,8 +12,9 @@ class Robot:
     def __init__(self):
         rospy.init_node('turtlebot_controller', anonymous=True)
 
-        self.velocity_publisher = rospy.Publisher('/dynamixel_workbench/cmd_vel', Twist, queue_size=10)
-        
+        #self.velocity_publisher = rospy.Publisher('/dynamixel_workbench/cmd_vel', Twist, queue_size=10)
+        self.velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+
         self.goal_position_subscriber = rospy.Subscriber('/goal_relative_pos', Point, self.update_goal)
 
         self.rate = rospy.Rate(10)
@@ -39,7 +40,7 @@ class Robot:
         hacia arriba, y pensamos como que lo que se mueve es el punto de destino.
         """
         theta = 0
-        return constant * (self.steering_angle() - theta)
+        return constant*(self.steering_angle() - theta)
 
     def move2goal(self):
         vel_msg = Twist()

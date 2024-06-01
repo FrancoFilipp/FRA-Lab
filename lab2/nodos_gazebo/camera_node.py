@@ -1,11 +1,24 @@
+#!/usr/bin/env python3
+
 import cv2
 import numpy as np
+import rospy
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
 
-cap = cv2.VideoCapture(0)
+# Inicializar ROS
+rospy.init_node('image_listener', anonymous=True)
 
-while(True):
-    # Tomar cada frame
-    _, frame = cap.read()
+# Crear un objeto CvBridge para la conversión entre imágenes ROS y OpenCV
+bridge = CvBridge()
+
+def image_callback(msg):
+    try:
+        # Convertir la imagen de ROS a OpenCV
+        frame = bridge.imgmsg_to_cv2(msg, "bgr8")
+    except CvBridgeError as e:
+        print(e)
+        return
 
     # Convertir de BGR a HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -14,8 +27,8 @@ while(True):
     # IDENTIFICAR COLOR AMARILLO
 
     # Definir el rango de color en HSV
-    lower_range = np.array([20, 100, 100])
-    upper_range = np.array([30, 255, 255])
+    lower_range = np.array([80, 100, 100])
+    upper_range = np.array([100, 255, 255])
 
     # Umbralizar la imagen HSV para obtener solo los colores en rango
     mask = cv2.inRange(hsv, lower_range, upper_range)
@@ -54,7 +67,11 @@ while(True):
     cv2.imshow('image', frame)
     k = cv2.waitKey(10) & 0xFF
     if k == 27:
-        break
+        rospy.signal_shutdown("User exit")
+        cv2.destroyAllWindows()
 
-cap.release()
-cv2.destroyAllWindows()
+# Suscribirse al tópico de la cámara
+image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, image_callback)
+
+# Mantener el nodo en ejecución
+rospy.spin()
