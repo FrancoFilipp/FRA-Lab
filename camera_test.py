@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import cv2
 import numpy as np
 import rospy
@@ -8,37 +6,16 @@ from geometry_msgs.msg import Point
 from cv_bridge import CvBridge, CvBridgeError
 from math import pi
 
-COUNT = 0
-# Inicializar ROS
-rospy.init_node('image_listener', anonymous=True)
-
-# Crear un objeto CvBridge para la conversión entre imágenes ROS y OpenCV
-bridge = CvBridge()
-
 cap = cv2.VideoCapture(0)
 
-def map_value(x, in_min, in_max, out_min, out_max):
-    return out_min + (float(x - in_min) / float(in_max - in_min)) * (out_max - out_min)
-
-def image_callback(msg):
-    #try:
-    #    # Convertir la imagen de ROS a OpenCV
-    #    frame = bridge.imgmsg_to_cv2(msg, "bgr8")
-    #except CvBridgeError as e:
-    #    print(e)
-    #    return
-    	# Take each frame
+while(True):
+	# Take each frame
 	_, frame = cap.read()
 
-	## Convert BGR to HSV
-	#hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    # Convertir de BGR a HSV
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+	# Convert BGR to HSV
+	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    #####################################################
-    # IDENTIFICAR COLOR AMARILLO
-
-    # Definir el rango de color en HSV
+	# Definir el rango de color en HSV
     lower_range = np.array([80, 100, 100])
     upper_range = np.array([100, 255, 255])
 
@@ -101,19 +78,3 @@ def image_callback(msg):
     if k == 27:
         rospy.signal_shutdown("User exit")
         cv2.destroyAllWindows()
-
-#def image_callback_pre(msg):
-#    global COUNT
-#    if COUNT % 10 == 0:
-#        image_callback(msg)
-#    COUNT += 1
-
-# Suscribirse al tópico de la cámara
-image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, image_callback)
-
-# Publicar la posición relativa del objeto amarillo
-global pos_pub
-pos_pub = rospy.Publisher('goal_relative_pos', Point, queue_size=10)
-
-# Mantener el nodo en ejecución
-rospy.spin()
