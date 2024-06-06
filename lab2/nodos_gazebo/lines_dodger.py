@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 import rospy
 from std_msgs.msg import String
-from rosserial_arduino.msg import ADC
+from rosserial_arduino.msg import Adc
+import time
 
 class LineDodger:
     def __init__(self):
         self.pub = rospy.Publisher('/line_touch', String, queue_size=10)
-        self.sub = rospy.Subscriber('/adc', rosserial_arduino.msg.ADC, self.callback) # Importar rosserial_arduino.msg.ADC
+        self.sub = rospy.Subscriber('/adc', Adc, self.callback) # Importar rosserial_arduino.msg.ADC
         self.left = False  # Rueda izquierda está sobre la línea?
         self.right = False # Rueda derecha está sobre la línea?
+        self.clock_start = time.time()
 
     def callback(self, data):
         # TODO: Verificar el acceso a data y cual es left y cual es right
@@ -17,10 +19,18 @@ class LineDodger:
         self.publish_line_touch()
 
     def publish_line_touch(self):
-        if self.left:
-            self.pub.publish("Left")
-        elif self.right:
-            self.pub.publish("Right")
+        clock_end = time.time()
+        if clock_end - self.clock_start < 0.5:
+            return
+        
+        self.clock_start = clock_end
+        if self.left and self.right:
+            self.pub.publish("Both")
+        else:
+            if self.left:
+                self.pub.publish("Left")
+            elif self.right:
+                self.pub.publish("Right")
 
     def dodge_line(self):
         rospy.spin()
