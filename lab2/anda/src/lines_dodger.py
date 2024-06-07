@@ -14,14 +14,14 @@ class LineDodger:
 
     def callback(self, data):
         # TODO: Verificar el acceso a data y cual es left y cual es right
-        self.left = data.adc1 < 620
-        self.right = data.adc0 < 850    
+        self.left = data.adc1 < 600
+        self.right = data.adc0 < 900
         self.publish_line_touch()
 
     def publish_line_touch(self):
         clock_end = time.time()
-        if clock_end - self.clock_start < 0.5:
-            return
+        #if clock_end - self.clock_start < 0.5:
+        #    return
         
         self.clock_start = clock_end
         if self.left and self.right:
