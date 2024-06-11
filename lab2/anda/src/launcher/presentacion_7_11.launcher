@@ -1,0 +1,11 @@
+<launch>
+
+<node pkg = "lab2_pkg" type="camera_test copy.py" name = "camera_test" />
+<node pkg = "lab2_pkg" type="camera_to_goal copy.py" name = "camera_to_goal" />
+<node pkg = "lab2_pkg" type="closest_object copy.py" name = "closest_object" />
+<node pkg = "lab2_pkg" type="lines_dodger copy.py" name = "line_doger" />
+<node pkg = "lab2_pkg" type="gotogoal copy.py" name = "gotogoal" />
+<node pkg = "lab2_pkg" type="read_sensors copy.py" name = "main_node" />
+<node pkg = "lab2_pkg" type="camera_node copy.py" name = "camera_node" />
+
+</launch>
