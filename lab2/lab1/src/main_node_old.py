@@ -2,6 +2,8 @@
 import rospy
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
+from rosserial_arduino.msg import Adc
+import time
 
 class MainNode:
     def __init__(self):
@@ -9,10 +11,12 @@ class MainNode:
         self.sub_ = rospy.Subscriber('/line_touch', String, self.turn)
         self.sub = rospy.Subscriber('/close_obj', Twist, self.go_to_goal) # Importar rosserial_arduino.msg.ADC
         self.pub = rospy.Publisher("/dynamixel_workbench/cmd_vel",  Twist, queue_size=10)
-        self.left = False  # Rueda izquierda está sobre la línea
-        self.right = False # Rueda derecha está sobre la línea
+        self.left = False  # Rueda izquierda está sobre la línea?
+        self.right = False # Rueda derecha está sobre la línea?
+        self.clock_start = time.time()
 
     def turn(self,data):
+        #if not self.flag:
         twist = Twist()
         if data.data == 'Right':
             print("Right")
@@ -24,14 +28,15 @@ class MainNode:
             print("Left")
             twist.angular.z = -0.5  # Velocidad angular negativa para girar a la derecha
             self.pub.publish(twist)
-        elif data.data == 'Both':
-            # Retroceder
-            print("Both")
-            twist.linear.x = -0.08
-            twist.angular.z = 0.5
-            self.pub.publish(twist)
+        else:
+            # No hacer nada si el dato no es 'Right' o 'Left'
+            pass
+        #self.flag = True
+        #time.sleep(0.1)
+        #self.flag = False
     
     def go_to_goal(self,data):
+        #if not self.flag:
         self.pub.publish(data)
 
     def dodge_line(self):

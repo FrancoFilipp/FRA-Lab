@@ -33,10 +33,10 @@ def image_callback(msg):
     yellow_lower_range = np.array([10, 100, 100])
     yellow_upper_range = np.array([25, 255, 255])
 
-    blue_lower_range = np.array([67, 10, 10])
+    blue_lower_range = np.array([67, 10, 30])
     blue_upper_range = np.array([202, 255, 255])
 
-    green_lower_range = np.array([35, 10, 10])
+    green_lower_range = np.array([35, 70, 70])
     green_upper_range = np.array([80, 255, 255])
 
     # Primer rango para tonos de rojo más bajos
@@ -99,10 +99,10 @@ def image_callback(msg):
         cv2.drawContours(frame, [largest_object], -1, (0, 255, 0), 2)
         cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
         cv2.putText(frame, "center", (cX - 20, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-
-        if largest_object in minotauro_contours:
+        
+        if largest_minotauro is not None and (largest_rocas is None or cv2.contourArea(largest_minotauro) > cv2.contourArea(largest_rocas)):
             print("Objeto mas cercano: Minotauro")
-        elif largest_object in rocas_contours:
+        else:
             print("Objeto mas cercano: Roca")
 
     # Mostrar la imagen con el objeto amarillo resaltado y el centro marcado

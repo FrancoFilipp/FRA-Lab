@@ -16,7 +16,7 @@ class Robot:
         
         self.goal_position_subscriber = rospy.Subscriber('/goal_relative_pos', Point, self.update_goal)
 
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(1)
         self.goal_pos = Point()
 
     def update_goal(self, data):
@@ -26,13 +26,13 @@ class Robot:
         return sqrt(pow(self.goal_pos.x, 2) + pow(self.goal_pos.y, 2))
 
     def linear_vel(self, constant=1.5):
-        max_vel = 0.08
+        max_vel = 0.1
         return min(constant * self.euclidean_distance(), max_vel)
 
     def steering_angle(self):
         return atan2(self.goal_pos.y, self.goal_pos.x)
 
-    def angular_vel(self, constant=1):
+    def angular_vel(self, constant=0.7):
         """
         TODO: Chequear esto, supongo que el theta es hacia a donde apunta el frente del robot,
         que creo que es theta=0. En este caso el robot siempre estaría "fijo" en el origen aputando

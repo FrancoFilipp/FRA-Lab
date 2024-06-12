@@ -17,18 +17,18 @@ class MainNode:
         if data.data == 'Right':
             print("Right")
             # Giro a la izquierda
-            twist.angular.z = 0.5  # Velocidad angular positiva para girar a la izquierda
+            twist.angular.z = 0.7  # Velocidad angular positiva para girar a la izquierda
             self.pub.publish(twist)
         elif data.data == 'Left':
             # Giro a la derecha
             print("Left")
-            twist.angular.z = -0.5  # Velocidad angular negativa para girar a la derecha
+            twist.angular.z = -0.7  # Velocidad angular negativa para girar a la derecha
             self.pub.publish(twist)
         elif data.data == 'Both':
             # Retroceder
             print("Both")
             twist.linear.x = -0.08
-            twist.angular.z = 0.5
+            twist.angular.z = 0.7
             self.pub.publish(twist)
     
     def go_to_goal(self,data):

@@ -1,0 +1,15 @@
+<launch>
+    <!-- hls_lfcd_lds_driver  -->
+    <include file="$(find hls_lfcd_lds_driver)/launch/hlds_laser.launch" />
+    <!-- dinamixel workbench -->
+    <include file="$(find dynamixel_workbench_controllers)/launch/dynamixel_controllers_1.launch" />
+    <!--usb_cam   <node pkg = "usb_cam" type="usb_cam_node" name = "usb_cam" /> -->
+    <node pkg = "usb_cam" type="usb_cam_node" name = "usb_cam" output="log"/>
+    <!--rosserial-arduino-->
+    <node pkg = "rosserial_python" type="serial_node.py" name = "rosserial_arduino" args="/dev/ttyACM0" />
+    <node pkg = "lab1" type="closest_object.py" name = "closest_object" />
+    <node pkg = "lab1" type="gotogoal.py" name = "gotogoal" />
+    <node pkg = "lab1" type="lines_dodger.py" name = "line_doger" />
+    <node pkg = "lab1" type="object_detector.py" name = "object_detector" output="screen"/>
+    <node pkg = "lab1" type="main_node.py" name = "main" />
+</launch>
