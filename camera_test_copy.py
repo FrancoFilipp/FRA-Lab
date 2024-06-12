@@ -11,21 +11,35 @@ from math import pi
 while(True):
 	# Take each frame
 	#_, frame = cap.read()
-	image_path = 'FRA-Lab/lab2/image.png'
+	image_path = 'FRA-Lab/image.png'
 	frame = cv2.imread(image_path)
 
-	# Convert to HSV color space
+	#try:
+	#	# Convertir la imagen de ROS a OpenCV
+	#	frame = bridge.imgmsg_to_cv2(msg, "bgr8")
+	#except CvBridgeError as e:
+	#	print(e)
+	#	return
+
+	# Convertir de BGR a HSV
 	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-	# Definir el rango de color en HSV
-	lower_range = np.array([10, 100, 100])
-	upper_range = np.array([25, 255, 255])
+	#####################################################
+	# IDENTIFICAR COLOR AMARILLO
 
-    # Umbralizar la imagen HSV para obtener solo los colores en rango
+	# Definir el rango de color en HSV
+	#lower_range = np.array([67, 10, 10])
+	#upper_range = np.array([202, 255, 255])
+
+	lower_range = np.array([30, 50, 50])
+	upper_range = np.array([60, 255, 255])
+
+	# Umbralizar la imagen HSV para obtener solo los colores en rango
 	mask = cv2.inRange(hsv, lower_range, upper_range)
 
+
 	# Aplicar transformaciones morfológicas para reducir el ruido
-	kernel = np.ones((5, 5), np.uint8)
+	kernel = np.ones((10, 10), np.uint8)
 	mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)  # Apertura
 	mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)  # Cierre
 
@@ -51,12 +65,14 @@ while(True):
 		cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
 		cv2.putText(frame, "center", (cX - 20, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
+		print(f"Azul detectado!")
+
+
 	# Aplicar AND bit a bit de la máscara y la imagen original
 	res = cv2.bitwise_and(frame, frame, mask=mask)
 
 	# Mostrar la imagen con el objeto amarillo resaltado y el centro marcado
 	cv2.imshow('image', frame)
-	
 	k = cv2.waitKey(10) & 0xFF
 	if k == 27:
 		rospy.signal_shutdown("User exit")
