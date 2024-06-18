@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import rospy
+from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist, Point
 from math import pow, atan2, sqrt
 from turtlesim.srv import SetPen
@@ -13,6 +14,8 @@ class Robot:
         rospy.init_node('turtlebot_controller', anonymous=True)
 
         self.velocity_publisher = rospy.Publisher('/close_obj', Twist, queue_size=10)
+
+        self.distance_publisher = rospy.Publisher('/close_obj_dist', Float32, queue_size=10)
         
         self.goal_position_subscriber = rospy.Subscriber('/goal_relative_pos', Point, self.update_goal)
 
@@ -49,8 +52,7 @@ class Robot:
         distance_tolerance = 0.17
         while not rospy.is_shutdown():
             while self.euclidean_distance() >= distance_tolerance and not rospy.is_shutdown():
-                print(self.euclidean_distance())
-                # print("Pos:", self.goal_pos)
+                self.distance_publisher.publish(self.euclidean_distance())
                 
                 vel_msg.linear.x = self.linear_vel()
                 vel_msg.linear.y = 0

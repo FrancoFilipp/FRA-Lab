@@ -16,7 +16,7 @@ class GoToStart:
         self.gotostart_sub = rospy.Subscriber('/gotostart', String, self.gotostart_callback)
 
         # Publicador del tópico /cmd_vel
-        self.cmd_vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        self.cmd_vel_pub = rospy.Publisher('/cmd_vel_to_start', Twist, queue_size=10)
 
         # Inicializar la posición y orientación del robot
         self.x = 0.0

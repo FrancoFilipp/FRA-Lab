@@ -3,6 +3,7 @@
 import cv2
 import numpy as np
 import rospy
+from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from cv_bridge import CvBridge, CvBridgeError
@@ -102,8 +103,10 @@ def image_callback(msg):
         
         if largest_minotauro is not None and (largest_rocas is None or cv2.contourArea(largest_minotauro) > cv2.contourArea(largest_rocas)):
             print("Objeto mas cercano: Minotauro")
+            pub.publish("minotauro")
         else:
             print("Objeto mas cercano: Roca")
+            pub.publish("roca")
 
     # Mostrar la imagen con el objeto amarillo resaltado y el centro marcado
     cv2.imshow('image', frame)
@@ -114,6 +117,9 @@ def image_callback(msg):
 
 # Suscribirse al tópico de la cámara
 image_sub = rospy.Subscriber('usb_cam/image_raw', Image, image_callback)
+
+# Publicar en el tópico /close_obj "roca" o "minotauro"
+pub = rospy.Publisher('/object_detected', String, queue_size=10)
 
 # Mantener el nodo en ejecución
 rospy.spin()
