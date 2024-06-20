@@ -1,0 +1,15 @@
+<launch>
+
+<node pkg = "lab2_pkg" type="closest_object.py" name = "publisher" />
+<node pkg = "lab2_pkg" type="gotogoal.py" name = "test" />
+<node pkg = "lab2_pkg" type="camera_to_goal.py" name = "camera" />
+
+
+<include file="/home/lolo/catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_gazebo_rviz.launch"></include>
+
+<node pkg = "gazebo_ros" type="gazebo" name = "gazebo1" args="-world_name /home/lolo/catkin_ws/src/lab2/lab2_pkg/src/gazebo_world/lab_1_world_camaras_sensores" />
+
+
+
+
+</launch>
