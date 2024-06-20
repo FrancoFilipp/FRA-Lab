@@ -4,6 +4,14 @@
 <node pkg = "lab2_pkg" type="gotogoal.py" name = "test" />
 <node pkg = "lab2_pkg" type="camera_to_goal.py" name = "camera" />
 
+<node pkg = "lab2_pkg" type="closest_object.py" name = "closest_object" />
+<node pkg = "lab2_pkg" type="gotogoal.py" name = "gotogoal" />
+<node pkg = "lab2_pkg" type="lines_dodger.py" name = "line_doger" />
+<node pkg = "lab2_pkg" type="object_detector.py" name = "object_detector" output="screen"/>
+<node pkg = "lab2_pkg" type="main_node.py" name = "main" />
+<node pkg = "lab2_pkg" type="light_sensor_sim_izq.py" name = "sensor_izq" />
+<node pkg = "lab2_pkg" type="light_sensor_sim_der.py" name = "sensor_der" />
+
 
 <include file="/home/lolo/catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch/turtlebot3_gazebo_rviz.launch"></include>
 
