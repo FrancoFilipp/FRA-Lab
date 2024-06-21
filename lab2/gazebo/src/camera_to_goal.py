@@ -4,13 +4,19 @@ import cv2
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
+from geometry_msgs.msg import Point
 from cv_bridge import CvBridge, CvBridgeError
+from math import pi
 
+COUNT = 0
 # Inicializar ROS
 rospy.init_node('image_listener', anonymous=True)
 
 # Crear un objeto CvBridge para la conversión entre imágenes ROS y OpenCV
 bridge = CvBridge()
+
+def map_value(x, in_min, in_max, out_min, out_max):
+    return out_min + (float(x - in_min) / float(in_max - in_min)) * (out_max - out_min)
 
 def image_callback(msg):
     try:
@@ -59,6 +65,26 @@ def image_callback(msg):
         cv2.drawContours(frame, [largest_contour], -1, (0, 255, 0), 2)
         cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
         cv2.putText(frame, "center", (cX - 20, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        #print(f"Center: ({cX}, {cY})")
+
+        # el centro es theta = 0 -> -pi/2
+        # el inicio (a la izquierda) es (-0.94) + pi/2 = 0.63 = pixel 0
+        # el fin (a la derecha) es  (+4.0) +  pi/2 = 5.6 = pixel 1920
+        # el medio es 4.71 = - 1.57 = pixel 960
+        
+        calibration_angle = pi/2#4.69 # El frente del robot está en 4.69
+        # ahora mapear el pixel a un angulo
+        if int(cX) < 960:
+            theta = map_value(cX, 0, 960, -0.94, -1.57)
+        else:
+            theta = map_value(cX, 960, 1920, 4.0, 4.71)
+        print(f"Theta: {theta}")
+
+        x = 0.5 * np.cos(theta + np.pi/2)  
+        y = 0.5 * np.sin(theta + np.pi/2)
+        
+        pos_pub.publish(Point(x, y, 0))
+    
 
     # Aplicar AND bit a bit de la máscara y la imagen original
     res = cv2.bitwise_and(frame, frame, mask=mask)
@@ -70,8 +96,18 @@ def image_callback(msg):
         rospy.signal_shutdown("User exit")
         cv2.destroyAllWindows()
 
+#def image_callback_pre(msg):
+#    global COUNT
+#    if COUNT % 10 == 0:
+#        image_callback(msg)
+#    COUNT += 1
+
 # Suscribirse al tópico de la cámara
 image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, image_callback)
+
+# Publicar la posición relativa del objeto amarillo
+global pos_pub
+pos_pub = rospy.Publisher('goal_relative_pos', Point, queue_size=10)
 
 # Mantener el nodo en ejecución
 rospy.spin()

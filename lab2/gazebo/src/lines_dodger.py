@@ -12,8 +12,8 @@ class LineDodger:
         self.right = False # Rueda derecha está sobre la línea?
 
     def callback(self, data):
-        self.left = data.adc1 < 600
-        self.right = data.adc0 < 900
+        self.left = data.adc0 > 500
+        self.right = data.adc1 > 500
         self.publish_line_touch()
 
     def publish_line_touch(self):

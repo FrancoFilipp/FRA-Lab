@@ -4,9 +4,7 @@ import cv2
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import Point
 from cv_bridge import CvBridge, CvBridgeError
-from math import pi
 
 COUNT = 0
 # Inicializar ROS
@@ -14,9 +12,6 @@ rospy.init_node('image_listener', anonymous=True)
 
 # Crear un objeto CvBridge para la conversión entre imágenes ROS y OpenCV
 bridge = CvBridge()
-
-def map_value(x, in_min, in_max, out_min, out_max):
-    return out_min + (float(x - in_min) / float(in_max - in_min)) * (out_max - out_min)
 
 def image_callback(msg):
     try:
@@ -33,10 +28,10 @@ def image_callback(msg):
     yellow_lower_range = np.array([10, 100, 100])
     yellow_upper_range = np.array([25, 255, 255])
 
-    blue_lower_range = np.array([67, 10, 30])
+    blue_lower_range = np.array([67, 10, 10])
     blue_upper_range = np.array([202, 255, 255])
 
-    green_lower_range = np.array([35, 70, 70])
+    green_lower_range = np.array([35, 10, 10])
     green_upper_range = np.array([80, 255, 255])
 
     # Primer rango para tonos de rojo más bajos
@@ -77,33 +72,53 @@ def image_callback(msg):
     minotauro_contours = y_contours + b_contours
     rocas_contours = g_contours + r_contours
 
-
-    # Suponiendo que hay al menos un contorno, encontrar el contorno más grande
+# Suponiendo que hay al menos un contorno
     if len(minotauro_contours) > 0 or len(rocas_contours) > 0:
-        largest_minotauro = max(minotauro_contours, key=cv2.contourArea)
-        largest_rocas = max(rocas_contours, key=cv2.contourArea)
+        largest_minotauro = None
+        largest_rocas = None
+        largest_object = None
 
-        largest_object = max(minotauro_contours + rocas_contours, key=cv2.contourArea)
+        if len(minotauro_contours) > 0:
+            largest_minotauro = max(minotauro_contours, key=cv2.contourArea)
 
-        # Calcular los momentos del contorno más grande
-        M = cv2.moments(largest_object)
+        if len(rocas_contours) > 0:
+            largest_rocas = max(rocas_contours, key=cv2.contourArea)
 
-        if M["m00"] != 0:
-            # Calcular las coordenadas del centro del objeto
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
-        else:
-            cX, cY = 0, 0
+        if largest_minotauro is not None and largest_rocas is not None:
+            largest_object = max([largest_minotauro, largest_rocas], key=cv2.contourArea)
+        elif largest_minotauro is not None:
+            largest_object = largest_minotauro
+        elif largest_rocas is not None:
+            largest_object = largest_rocas
 
-        # Dibujar el contorno y el centro del objeto en la imagen original
-        cv2.drawContours(frame, [largest_object], -1, (0, 255, 0), 2)
-        cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
-        cv2.putText(frame, "center", (cX - 20, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-        
-        if largest_minotauro is not None and (largest_rocas is None or cv2.contourArea(largest_minotauro) > cv2.contourArea(largest_rocas)):
-            print("Objeto mas cercano: Minotauro")
-        else:
-            print("Objeto mas cercano: Roca")
+        if largest_object is not None:
+            # Calcular los momentos del contorno más grande
+            M = cv2.moments(largest_object)
+
+            if M["m00"] != 0:
+                # Calcular las coordenadas del centro del objeto
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+            else:
+                cX, cY = 0, 0
+
+            # Dibujar el contorno y el centro del objeto en la imagen original
+            cv2.drawContours(frame, [largest_object], -1, (0, 255, 0), 2)
+            cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
+            cv2.putText(frame, "center", (cX - 20, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+            if largest_minotauro is not None and (largest_rocas is None or cv2.contourArea(largest_minotauro) > cv2.contourArea(largest_rocas)):
+                print("Objeto mas cercano: Minotauro")
+                # pub.publish("minotauro")
+            else:
+                print("Objeto mas cercano: Roca")
+                # pub.publish("roca")
+    else:
+        print("No se detectaron ni minotauros ni rocas")
+
+
+    # Aplicar AND bit a bit de la máscara y la imagen original
+    #res = cv2.bitwise_and(frame, frame, mask=mask)
 
     # Mostrar la imagen con el objeto amarillo resaltado y el centro marcado
     cv2.imshow('image', frame)
@@ -112,8 +127,14 @@ def image_callback(msg):
         rospy.signal_shutdown("User exit")
         cv2.destroyAllWindows()
 
+#def image_callback_pre(msg):
+#    global COUNT
+#    if COUNT % 10 == 0:
+#        image_callback(msg)
+#    COUNT += 1
+
 # Suscribirse al tópico de la cámara
-image_sub = rospy.Subscriber('usb_cam/image_raw', Image, image_callback)
+image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, image_callback)
 
 # Mantener el nodo en ejecución
 rospy.spin()

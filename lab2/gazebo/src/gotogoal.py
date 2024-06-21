@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import rospy
+from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist, Point
-from math import pow, atan2, sqrt, pi
+from math import pow, atan2, sqrt
 from turtlesim.srv import SetPen
 import random
 import time
@@ -12,12 +13,13 @@ class Robot:
     def __init__(self):
         rospy.init_node('turtlebot_controller', anonymous=True)
 
-        #self.velocity_publisher = rospy.Publisher('/dynamixel_workbench/cmd_vel', Twist, queue_size=10)
-        self.velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        self.velocity_publisher = rospy.Publisher('/close_obj', Twist, queue_size=10)
 
+        self.distance_publisher = rospy.Publisher('/close_obj_dist', Float32, queue_size=10)
+        
         self.goal_position_subscriber = rospy.Subscriber('/goal_relative_pos', Point, self.update_goal)
 
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(5)
         self.goal_pos = Point()
 
     def update_goal(self, data):
@@ -27,20 +29,20 @@ class Robot:
         return sqrt(pow(self.goal_pos.x, 2) + pow(self.goal_pos.y, 2))
 
     def linear_vel(self, constant=1.5):
-        max_vel = 0.15
+        max_vel = 0.05
         return min(constant * self.euclidean_distance(), max_vel)
 
     def steering_angle(self):
         return atan2(self.goal_pos.y, self.goal_pos.x)
 
-    def angular_vel(self, constant=2):
+    def angular_vel(self, constant=0.5):
         """
         TODO: Chequear esto, supongo que el theta es hacia a donde apunta el frente del robot,
         que creo que es theta=0. En este caso el robot siempre estaría "fijo" en el origen aputando
         hacia arriba, y pensamos como que lo que se mueve es el punto de destino.
         """
         theta = 0
-        return constant*(self.steering_angle() - theta)
+        return constant * (self.steering_angle() - theta)
 
     def move2goal(self):
         vel_msg = Twist()
@@ -50,8 +52,7 @@ class Robot:
         distance_tolerance = 0.17
         while not rospy.is_shutdown():
             while self.euclidean_distance() >= distance_tolerance and not rospy.is_shutdown():
-                print(self.euclidean_distance())
-                # print("Pos:", self.goal_pos)
+                self.distance_publisher.publish(self.euclidean_distance())
                 
                 vel_msg.linear.x = self.linear_vel()
                 vel_msg.linear.y = 0

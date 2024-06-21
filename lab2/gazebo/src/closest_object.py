@@ -3,6 +3,7 @@ import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Point
 import numpy as np
+from math import pi
 
 def callback(scan):
     min_distance = float('inf')
@@ -14,8 +15,9 @@ def callback(scan):
             min_index = i
 
     theta = scan.angle_min + min_index * scan.angle_increment
+    print("Theta: ", theta)
     
-    calibration_angle = 3.14/2#4.69 # El frente del robot está en 4.69
+    calibration_angle = pi/2#4.69 # El frente del robot está en 4.69
     theta -= calibration_angle
     
     if min_index == -1:
@@ -23,7 +25,7 @@ def callback(scan):
         y = 0
     else:
         # TODO: Verificar que ande bien
-        x = min_distance * np.cos(theta + np.pi/2)
+        x = min_distance * np.cos(theta + np.pi/2)  
         y = min_distance * np.sin(theta + np.pi/2)
         
     pos_pub.publish(Point(x, y, 0))
