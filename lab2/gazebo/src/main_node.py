@@ -10,7 +10,7 @@ class MainNode:
         self.sub_clos = rospy.Subscriber('/close_obj', Twist, self.go_to_goal)
         self.sub_obj = rospy.Subscriber('/object_detected', String, self.update_object)
         self.sub_dist = rospy.Subscriber('/close_obj_dist', Float32, self.update_distance)
-        #self.sub_start = rospy.Subscriber('/cmd_vel_to_start', Twist, self.go_to_start)
+        self.sub_start = rospy.Subscriber('/cmd_vel_to_start', Twist, self.go_to_start)
 
         self.pub_to_start = rospy.Publisher('/gotostart', String, queue_size=10)
         self.pub = rospy.Publisher("/cmd_vel",  Twist, queue_size=10)

@@ -8,7 +8,7 @@
 <node pkg = "lab_1_pkg" type="closest_object.py" name = "lidar" />
 <node pkg = "lab_1_pkg" type="gotogoal.py" name = "go_to_goal" />
 
-<node pkg = "gazebo_ros" type="gazebo" name = "gazebo1" args="-world_name /home/franco/FRA-Lab/lab2/gazebo_world/final_word" />
+<node pkg = "gazebo_ros" type="gazebo" name = "gazebo1" args="-world_name /home/franco/FRA-Lab/lab2/gazebo/worlds/final_world" />
 
 
 </launch>
