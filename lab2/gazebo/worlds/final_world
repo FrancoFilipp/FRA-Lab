@@ -815,10 +815,10 @@
       <static>0</static>
       <link name='link'>
         <collision name='surface'>
-          <pose>0 0 0 0 -0 0</pose>
+          <pose>0 0 0.065 0 -0 0</pose>
           <geometry>
             <box>
-              <size>2.5 3.5 0.05</size>
+              <size>-2.5 -3.5 -0.05</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>

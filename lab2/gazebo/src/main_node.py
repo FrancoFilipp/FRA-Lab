@@ -19,12 +19,13 @@ class MainNode:
         self.biggest_object = "NADA"
         self.left = False  # Rueda izquierda está sobre la línea
         self.right = False # Rueda derecha está sobre la línea
-        self.closest_distance = 99999999
 
         # Frecuencia del bucle
         self.rate = rospy.Rate(1)
 
     def update_distance(self, data):
+        if self.state == "GO_TO_START":
+            return
         if data.data < 0.22 :
             self.state = "FRENTE_A_OBJETO"
             return
@@ -46,18 +47,18 @@ class MainNode:
             #print("Right")
             # Giro a la izquierda
             # numero random entre 0.01 y 0.05
-            rnd_nm = random.uniform(0.01, 0.05)
-            if self.state != "GO_TO_CLOSEST_OBJECT" :
-                twist.linear.x = -rnd_nm
+            rnd_nm = random.uniform(0.08, 0.12)
+            #if self.state != "GO_TO_CLOSEST_OBJECT" :
+            twist.linear.x = -rnd_nm
             twist.angular.z = 0.3 # Velocidad angular positiva para girar a la izquierda
             self.pub.publish(twist)
         elif data.data == 'Left':
             # Giro a la derecha
             # numero random entre 0.01 y 0.05
-            rnd_nm = random.uniform(0.01, 0.05)
+            rnd_nm = random.uniform(0.08, 0.12)
             #print("Left")
-            if self.state != "GO_TO_CLOSEST_OBJECT" :
-                twist.linear.x = -rnd_nm
+            #if self.state != "GO_TO_CLOSEST_OBJECT" :
+            twist.linear.x = -rnd_nm
             twist.angular.z = -0.3  # Velocidad angular negativa para girar a la derecha
             self.pub.publish(twist)
         elif data.data == 'Both':
