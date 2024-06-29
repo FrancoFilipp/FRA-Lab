@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import random
+import time
 import rospy
 from std_msgs.msg import String, Float32
 from geometry_msgs.msg import Twist
@@ -11,6 +12,7 @@ class MainNode:
         self.sub_obj = rospy.Subscriber('/object_detected', String, self.update_object)
         self.sub_dist = rospy.Subscriber('/close_obj_dist', Float32, self.update_distance)
         self.sub_start = rospy.Subscriber('/cmd_vel_to_start', Twist, self.go_to_start)
+        self.arrived_sub = rospy.Subscriber('/arrived', String, self.arrived_callback)
 
         self.pub_to_start = rospy.Publisher('/gotostart', String, queue_size=10)
         self.pub = rospy.Publisher("/cmd_vel",  Twist, queue_size=10)
@@ -22,14 +24,19 @@ class MainNode:
 
         # Frecuencia del bucle
         self.rate = rospy.Rate(1)
+    
+    def arrived_callback(self, data):
+        if data.data == "ARRIVED":
+            print("Llegamos al origen!!!!")
+            self.state = "END"
 
     def update_distance(self, data):
-        if self.state == "GO_TO_START":
+        if self.state in ["TURNING", "GO_TO_START", "END"]:
             return
         if data.data < 0.22 :
             self.state = "FRENTE_A_OBJETO"
             return
-        if data.data < 0.4:
+        if data.data < 0.5:
             self.state = "GO_TO_CLOSEST_OBJECT"
             return
         self.state = "EXPLORING"
@@ -43,6 +50,10 @@ class MainNode:
 
     def turn(self,data):
         twist = Twist()
+        if self.state == "END":
+            return
+        ant_state = self.state
+        self.state = "TURNING"
         if data.data == 'Right':
             #print("Right")
             # Giro a la izquierda
@@ -67,6 +78,7 @@ class MainNode:
             twist.linear.x = -0.05
             twist.angular.z = 0.3
             self.pub.publish(twist)
+        self.state = ant_state
     
     def go_to_goal(self,data):
         if self.state == "GO_TO_CLOSEST_OBJECT":
@@ -80,17 +92,19 @@ class MainNode:
         while not rospy.is_shutdown():
             print(self.state)
             twist = Twist()
-            if self.state == "EXPLORING":
+            if self.state in ["END", "TURNING"]:
+                continue
+            elif self.state == "EXPLORING":
                 twist.linear.x = 0.05
                 self.pub.publish(twist)
-            if self.state == "FRENTE_A_OBJETO":
+            elif self.state == "FRENTE_A_OBJETO":
                 self.stop_robot()
                 if self.biggest_object == "roca":
                     # espero a que la quiten
                     print("Esperando a que quiten la roca")
                     self.stop_robot()
                     continue
-                if self.biggest_object == "minotauro":
+                elif self.biggest_object == "minotauro":
                     print("El Minotauro!!")
                     self.stop_robot()
                     self.state = "GO_TO_START"
