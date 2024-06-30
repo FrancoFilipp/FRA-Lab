@@ -83,12 +83,14 @@ def add_node_to_graph():
                 elif len(graph.nodes) > 0 and similar_n:
                     # Unir el nodo last_node con similar_node
                     last_node = list(graph.nodes)[-1]
-                    graph.add_edge(last_node, similar_n)
+                    distance = math.sqrt((last_node[0] - similar_n[0])**2 + (last_node[1] - similar_n[1])**2)
+                    graph.add_edge(last_node, similar_n, weight=distance)
                 else:
                     graph.add_node((x, y))
                     if len(graph.nodes) > 1:
                         last_node = list(graph.nodes)[-2]
-                        graph.add_edge((x, y), last_node)
+                        distance = math.sqrt((x - last_node[0])**2 + (y - last_node[1])**2)
+                        graph.add_edge((x, y), last_node, weight=distance)
                     
                     rospy.loginfo(f"Nodo nuevo: {(x, y)}")
         rate.sleep()
@@ -105,22 +107,6 @@ def find_path_to_origin(start):
         print("No path to origin found")
         return []
     
-def linear_vel(euclidean_distance, constant=1.5):
-    max_vel = 0.05
-    return min(constant * euclidean_distance, max_vel)
-
-def steering_angle(x,y):
-    return atan2(y, x)
-
-def angular_vel(x,y,constant=0.5):
-    """
-    TODO: Chequear esto, supongo que el theta es hacia a donde apunta el frente del robot,
-    que creo que es theta=0. En este caso el robot siempre estaría "fijo" en el origen aputando
-    hacia arriba, y pensamos como que lo que se mueve es el punto de destino.
-    """
-    theta = 0
-    return constant * (steering_angle(x,y) - theta)
-
 def follow_path(path):
     global current_position, th
     if not path:
