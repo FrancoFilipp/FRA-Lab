@@ -22,6 +22,7 @@ class MainNode:
         self.biggest_object = "NADA"
         self.left = False  # Rueda izquierda está sobre la línea
         self.right = False # Rueda derecha está sobre la línea
+        self.last_obj = "NADA"
 
         # Frecuencia del bucle
         self.rate = rospy.Rate(1)
@@ -69,8 +70,7 @@ class MainNode:
             self.pub.publish(twist)
             time.sleep(0.5)
             twist.linear.x = 0.1
-            time.sleep(0.4)
-
+            time.sleep(0.5)
             self.pub.publish(twist)
         elif data.data == 'Both':
             twist.linear.x = -0.05
@@ -101,9 +101,10 @@ class MainNode:
                 if self.biggest_object == "roca":
                     # espero a que la quiten
                     print("Esperando a que quiten la roca")
+                    self.last_obj = "ROCA"
                     self.stop_robot()
                     continue
-                elif self.biggest_object == "minotauro":
+                elif self.biggest_object == "minotauro" and self.last_obj != "ROCA" :
                     print("El Minotauro!!")
                     self.stop_robot()
                     self.state = "GO_TO_START"

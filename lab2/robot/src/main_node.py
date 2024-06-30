@@ -14,6 +14,7 @@ class MainNode:
         self.sub_obj = rospy.Subscriber('/object_detected', String, self.update_object)
         self.sub_dist = rospy.Subscriber('/close_obj_dist', Float32, self.update_distance)
         self.sub_start = rospy.Subscriber('/cmd_vel_to_start', Twist, self.go_to_start)
+        self.arrived_sub = rospy.Subscriber('/arrived', String, self.arrived_callback)
 
         self.pub_to_start = rospy.Publisher('/gotostart', String, queue_size=10)
         
@@ -25,18 +26,21 @@ class MainNode:
 
         # Frecuencia del bucle
         self.rate = rospy.Rate(1)
+    
+    def arrived_callback(self, data):
+        if data.data == "ARRIVED":
+            print("Llegamos al origen!!!!")
+            self.state = "END"
 
     def update_distance(self, data):
-        if self.state == "GO_TO_START":
+        if self.state in ["TURNING", "GO_TO_START", "END"]:
             return
         if data.data < 0.22 :
             self.state = "FRENTE_A_OBJETO"
             return
         if data.data < 0.4:
             self.state = "GO_TO_CLOSEST_OBJECT"
-            self.last_obj = "NADA"
             return
-        self.last_obj = "NADA"
         self.state = "EXPLORING"
     
     def update_object(self, data):
@@ -48,37 +52,34 @@ class MainNode:
 
     def turn(self,data):
         twist = Twist()
-        rate = rospy.Rate(2)
+        if self.state in ["TURNING","END"]:
+            return
+        ant_state = self.state
+        self.state = "TURNING"
         if data.data == 'Right':
-            print("Right")
-            # Giro a la izquierda
-            # numero random entre 0.01 y 0.05
             rnd_nm = random.uniform(0.08, 0.12)
-            #if self.state != "GO_TO_CLOSEST_OBJECT" :
             twist.linear.x = -rnd_nm
             twist.angular.z = 0.3 # Velocidad angular positiva para girar a la izquierda
             self.pub.publish(twist)
             time.sleep(0.5)
             twist.linear.x = rnd_nm
             self.pub.publish(twist)
+            time.sleep(0.5)
         elif data.data == 'Left':   
-            # Giro a la derecha
-            # numero random entre 0.01 y 0.05
             rnd_nm = random.uniform(0.08, 0.12)
-            print("Left")
-            #if self.state != "GO_TO_CLOSEST_OBJECT" :
             twist.linear.x = -rnd_nm
             twist.angular.z = -0.3  # Velocidad angular negativa para girar a la derecha
             self.pub.publish(twist)
             time.sleep(0.5)
             twist.linear.x = rnd_nm
+            time.sleep(0.5)
             self.pub.publish(twist)
         elif data.data == 'Both':
-            # Retroceder
-            #print("Both")
             twist.linear.x = -0.05
             twist.angular.z = 0.3
             self.pub.publish(twist)
+            time.sleep(0.5)
+        self.state = ant_state
     
     def go_to_goal(self,data):
         if self.state == "GO_TO_CLOSEST_OBJECT":
@@ -92,10 +93,12 @@ class MainNode:
         while not rospy.is_shutdown():
             print(self.state)
             twist = Twist()
-            if self.state == "EXPLORING":
+            if self.state in ["END", "TURNING"]:
+                continue
+            elif self.state == "EXPLORING":
                 twist.linear.x = 0.1
                 self.pub.publish(twist)
-            if self.state == "FRENTE_A_OBJETO":
+            elif self.state == "FRENTE_A_OBJETO":
                 self.stop_robot()
                 if self.biggest_object == "roca":
                     # espero a que la quiten
@@ -103,7 +106,7 @@ class MainNode:
                     self.last_obj = "ROCA"
                     self.stop_robot()
                     continue
-                if self.biggest_object == "minotauro" and self.last_obj != "ROCA" :
+                elif self.biggest_object == "minotauro" and self.last_obj != "ROCA" :
                     print("El Minotauro!!")
                     self.stop_robot()
                     self.state = "GO_TO_START"
