@@ -6,10 +6,11 @@ import time
 
 class LineDodger:
     def __init__(self):
-        self.pub = rospy.Publisher('/line_touch', String, queue_size=10)
+        self.pub = rospy.Publisher('/line_touch', String, queue_size=0)
         self.sub = rospy.Subscriber('/adc', Adc, self.callback)
         self.left = False  # Rueda izquierda está sobre la línea?
         self.right = False # Rueda derecha está sobre la línea?
+        self.t0 = time.time() - 0.4
 
     def callback(self, data):
         self.left = data.adc0 > 500
@@ -17,9 +18,11 @@ class LineDodger:
         self.publish_line_touch()
 
     def publish_line_touch(self):
-        clock_end = time.time()
+        if time.time() - self.t0 > 0.4:
+            self.t0 = time.time()
+        else:
+            return
         
-        self.clock_start = clock_end
         if self.left and self.right:
             self.pub.publish("Both")
         else:

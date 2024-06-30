@@ -19,7 +19,7 @@ class Robot:
         
         self.goal_position_subscriber = rospy.Subscriber('/goal_relative_pos', Point, self.update_goal)
 
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(1)
         self.goal_pos = Point()
 
     def update_goal(self, data):

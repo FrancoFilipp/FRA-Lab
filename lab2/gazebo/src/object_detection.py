@@ -119,22 +119,12 @@ def image_callback(msg):
     else:
         print("No se detectaron ni minotauros ni rocas")
 
-
-    # Aplicar AND bit a bit de la máscara y la imagen original
-    #res = cv2.bitwise_and(frame, frame, mask=mask)
-
-    # Mostrar la imagen con el objeto amarillo resaltado y el centro marcado
-    cv2.imshow('image', frame)
+    # descomentar para mostrar la imagen en una ventana
+    #cv2.imshow('image', frame)
     k = cv2.waitKey(10) & 0xFF
     if k == 27:
         rospy.signal_shutdown("User exit")
         cv2.destroyAllWindows()
-
-#def image_callback_pre(msg):
-#    global COUNT
-#    if COUNT % 10 == 0:
-#        image_callback(msg)
-#    COUNT += 1
 
 # Suscribirse al tópico de la cámara
 image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, image_callback)
