@@ -157,7 +157,8 @@ def follow_path(path):
 def save_graph(path):
     global graph
     plt.clf()
-    pos = nx.spring_layout(graph)
+    # Crear un diccionario con las posiciones de los nodos
+    pos = {node: node for node in graph.nodes()}
     nx.draw(graph, pos, with_labels=True, node_size=500, node_color='skyblue')
     nx.draw_networkx_nodes(graph, pos, nodelist=path, node_color='red', node_size=500)
     plt.savefig("/home/franco/FRA-Lab/graph_imgs/graph.png")
